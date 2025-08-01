@@ -1,0 +1,765 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard KPI - Arthur Davetian</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js">
+let previewWeeks = 6;
+
+function generateInputs(count) {
+  const container = document.getElementById("newKpiValues");
+  const oldValues = {};
+  for (let i = 0; i < previewWeeks; i++) {
+    const oldInput = document.getElementById("newVal" + w);
+    if (oldInput) {
+      oldValues[i] = oldInput.value;
+    }
+  }
+  container.innerHTML = "";
+  previewWeeks = parseInt(count);
+  for (let i = 0; i < previewWeeks; i++) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.step = "any";
+    input.id = "newVal" + i;
+    input.placeholder = "Semaine " + (i + 1);
+    input.oninput = function() { updateProgressBar(); updatePreviewChart(); };
+    if (oldValues[i] !== undefined) input.value = oldValues[i];
+    container.appendChild(input);
+  }
+  updatePreviewChart();
+}
+
+function updatePreviewChart() {
+  const name = document.getElementById("newKpiName").value || "Prévisualisation";
+  const objectif = parseFloat(document.getElementById("newKpiObjectif").value);
+  const values = Array.from({length: previewWeeks}, (_, i) => {
+    const val = parseFloat(document.getElementById("newVal" + w).value);
+    return isNaN(val) ? null : val;
+  });
+  const suffix = name.includes('%') ? '%' : '';
+
+  const trace1 = {
+    x: values.map((_, i) => i + 1).filter((_, i) => values[i] !== null),
+    y: values.filter(v => v !== null),
+    mode: 'lines+markers',
+    name: 'Mesure',
+    line: {color: 'blue', width: 3},
+    marker: {color: 'blue', size: 6},
+    hovertemplate: 'Valeur : %{y}' + suffix + '<extra></extra>'
+  };
+
+  const trace2 = (!isNaN(objectif)) ? {
+    x: values.map((_, i) => i + 1).filter((_, i) => values[i] !== null),
+    y: values.filter(v => v !== null).map(() => objectif),
+    mode: 'lines',
+    name: 'Objectif',
+    line: {color: 'red', dash: 'dash'},
+    hovertemplate: 'Objectif : %{y}' + suffix + '<extra></extra>'
+  } : null;
+
+  const data = (!isNaN(objectif)) ? [trace1, trace2] : [trace1];
+
+  Plotly.newPlot('previewChart', data, {
+    title: {text: name.toUpperCase()},
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    font: {color: '#333'},
+    xaxis: {title: 'Semaine'},
+    yaxis: {title: 'Valeur'},
+    showlegend: true,
+    hovermode: 'x unified'
+  });
+}
+
+
+function updateProgressBar() {
+  const totalFields = previewWeeks + 2; // nom + objectif + valeurs
+  let filled = 0;
+  if (document.getElementById("newKpiName").value.trim() !== "") filled++;
+  if (!isNaN(parseFloat(document.getElementById("newKpiObjectif").value))) filled++;
+  for (let i = 0; i < previewWeeks; i++) {
+    const val = parseFloat(document.getElementById("newVal" + w).value);
+    if (!isNaN(val)) filled++;
+  }
+  const percent = Math.round((filled / totalFields) * 100);
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+
+
+
+
+</script>
+  <script src="https://rawgit.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js">
+let previewWeeks = 6;
+
+function generateInputs(count) {
+  const container = document.getElementById("newKpiValues");
+  const oldValues = {};
+  for (let i = 0; i < previewWeeks; i++) {
+    const oldInput = document.getElementById("newVal" + w);
+    if (oldInput) {
+      oldValues[i] = oldInput.value;
+    }
+  }
+  container.innerHTML = "";
+  previewWeeks = parseInt(count);
+  for (let i = 0; i < previewWeeks; i++) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.step = "any";
+    input.id = "newVal" + i;
+    input.placeholder = "Semaine " + (i + 1);
+    input.oninput = function() { updateProgressBar(); updatePreviewChart(); };
+    if (oldValues[i] !== undefined) input.value = oldValues[i];
+    container.appendChild(input);
+  }
+  updatePreviewChart();
+}
+
+function updatePreviewChart() {
+  const name = document.getElementById("newKpiName").value || "Prévisualisation";
+  const objectif = parseFloat(document.getElementById("newKpiObjectif").value);
+  const values = Array.from({length: previewWeeks}, (_, i) => {
+    const val = parseFloat(document.getElementById("newVal" + w).value);
+    return isNaN(val) ? null : val;
+  });
+  const suffix = name.includes('%') ? '%' : '';
+
+  const trace1 = {
+    x: values.map((_, i) => i + 1).filter((_, i) => values[i] !== null),
+    y: values.filter(v => v !== null),
+    mode: 'lines+markers',
+    name: 'Mesure',
+    line: {color: 'blue', width: 3},
+    marker: {color: 'blue', size: 6},
+    hovertemplate: 'Valeur : %{y}' + suffix + '<extra></extra>'
+  };
+
+  const trace2 = (!isNaN(objectif)) ? {
+    x: values.map((_, i) => i + 1).filter((_, i) => values[i] !== null),
+    y: values.filter(v => v !== null).map(() => objectif),
+    mode: 'lines',
+    name: 'Objectif',
+    line: {color: 'red', dash: 'dash'},
+    hovertemplate: 'Objectif : %{y}' + suffix + '<extra></extra>'
+  } : null;
+
+  const data = (!isNaN(objectif)) ? [trace1, trace2] : [trace1];
+
+  Plotly.newPlot('previewChart', data, {
+    title: {text: name.toUpperCase()},
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    font: {color: '#333'},
+    xaxis: {title: 'Semaine'},
+    yaxis: {title: 'Valeur'},
+    showlegend: true,
+    hovermode: 'x unified'
+  });
+}
+
+
+function updateProgressBar() {
+  const totalFields = previewWeeks + 2; // nom + objectif + valeurs
+  let filled = 0;
+  if (document.getElementById("newKpiName").value.trim() !== "") filled++;
+  if (!isNaN(parseFloat(document.getElementById("newKpiObjectif").value))) filled++;
+  for (let i = 0; i < previewWeeks; i++) {
+    const val = parseFloat(document.getElementById("newVal" + w).value);
+    if (!isNaN(val)) filled++;
+  }
+  const percent = Math.round((filled / totalFields) * 100);
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+
+
+
+
+</script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+  min-
+  display: flex;
+  flex-direction: row;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      background-color: #f4f6f8;
+    }
+    .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100vh;
+  z-index: 999;
+  align-self: stretch;
+      width: 230px;
+      background-color: #0e3b4d;
+      color: white;
+      
+      display: flex;
+      flex-direction: column;
+      padding: 20px 15px;
+    }
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .sidebar button {
+      background: none;
+      border: none;
+      color: white;
+      padding: 12px;
+      text-align: left;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+    .sidebar button:hover {
+      background-color: #145E78;
+    }
+    .content {
+  margin-left: 230px;
+      flex: 1;
+      padding: 20px;
+    }
+    .section {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    select, input, button {
+      padding: 8px;
+      margin: 5px 0;
+    }
+    #chart {
+      height: 500px;
+      background-color: #145E78;
+    }
+    .form-section {
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+    .form-section h3 {
+      margin-top: 0;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+    }
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+    table th {
+      background-color: #eeeeee;
+    }
+  
+@media screen and (max-width: 768px) {
+  .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100vh;
+  z-index: 999;
+  align-self: stretch;
+    width: 100%;
+    
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  .sidebar button {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+  .content {
+  margin-left: 230px;
+    padding: 10px;
+  }
+  #chart, #previewChart {
+    height: 300px;
+  }
+}
+
+
+button {
+  background-color: #0e3b4d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #145E78;
+}
+.sidebar button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+h2, h3 {
+  font-weight: 600;
+  color: #0e3b4d;
+}
+table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+input, select {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.form-section {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+
+
+.section {
+  display: none;
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+.section.active {
+  display: block;
+  opacity: 1;
+}
+
+
+
+.section {
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+}
+.section.active {
+  visibility: visible;
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+  transition-delay: 0s;
+}
+
+
+
+
+body.dark .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100vh;
+  z-index: 999;
+  align-self: stretch;
+  background-color: #1c1c1c;
+}
+body.dark .sidebar button {
+  color: #f0f0f0;
+}
+body.dark .form-section,
+body.dark table,
+body.dark input,
+body.dark select {
+  background-color: #222;
+  color: #f0f0f0;
+  border-color: #555;
+}
+body.dark table th {
+  background-color: #333;
+}
+body.dark #chart,
+body.dark #previewChart {
+  background-color: #1a1a1a !important;
+}
+
+
+
+
+body {
+  min-
+  display: flex;
+  flex-direction: row;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+button {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>KPI Dashboard</h2>
+  <button onclick="showSection('graph')">📊 Vue Graphique</button>
+  <button onclick="showSection('list')">📋 Liste des KPI</button>
+  <button onclick="showSection('add')">➕ Ajouter un KPI</button>
+  <button onclick="exportPDF()">📤 Export PDF</button>
+</div>
+
+
+
+
+
+<div class="content">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <img src="CESI.webp" alt="Logo CESI" style="height: 50px;">
+    <h1 style="flex: 1; text-align: center; color: #0e3b4d; font-weight: 700; font-size: 24px;">KPI – Projet de fin d’études | Le Méridien Étoile</h1>
+    <div style="display: flex; gap: 15px;">
+      <img src="CWDesignbuild-logo.png" alt="Logo C&W" style="height: 50px;">
+      <img src="meridien.png" alt="Logo Le Méridien" style="height: 50px;">
+    </div>
+  </div>
+
+  <div id="graph" class="section active">
+    <h2>Vue Graphique</h2>
+    <label for="kpiSelect">Choisir un KPI :</label>
+    <select id="kpiSelect" onchange="updateGraph()"></select>
+    <div id="chart"></div>
+  </div>
+
+  <div id="list" class="section">
+    <h2>Liste des KPI</h2>
+    <table id="kpiTable">
+      <thead><tr><th>Nom</th><th>Objectif</th><th>Moyenne</th><th>Actions</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="add" class="section">
+    <div class="form-section">
+<h3>Ajouter ou modifier un KPI</h3>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+  <label for="newKpiName">Nom :</label>
+  <input type="text" id="newKpiName" oninput="updateProgressBar(); updatePreviewChart()" style="width: 100%;">
+
+  <label for="newKpiObjectif">Objectif :</label>
+  <input type="number" id="newKpiObjectif" oninput="updateProgressBar(); updatePreviewChart()" style="width: 100%;">
+
+  <label for="weekCount">Nombre de semaines :</label>
+  <input type="number" id="weekCount" value="6" min="1" max="20" onchange="generateInputs(this.value)" style="width: 100%;">
+
+  <label>Valeurs :</label>
+  <div id="newKpiValues" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px;"></div>
+
+  
+<div style="margin-bottom: 10px;">
+  <label>Remplissage du KPI :</label>
+  <div style="background: #eee; border-radius: 20px; overflow: hidden;">
+    <div id="progressBar" style="height: 16px; width: 0%; background: #0e3b4d; transition: width 0.3s;"></div>
+  </div>
+</div>
+<div id="previewChart" style="margin-top:20px;"></div>
+
+  <button onclick="addNewKPI()" style="padding: 10px; font-size: 16px; background-color: #0e3b4d; color: white; border: none; border-radius: 6px; cursor: pointer;">
+    ✅ Ajouter
+  </button>
+<script>generateInputs(6);
+function updateProgressBar() {
+  const totalFields = previewWeeks + 2; // nom + objectif + valeurs
+  let filled = 0;
+  if (document.getElementById("newKpiName").value.trim() !== "") filled++;
+  if (!isNaN(parseFloat(document.getElementById("newKpiObjectif").value))) filled++;
+  for (let i = 0; i < previewWeeks; i++) {
+    const val = parseFloat(document.getElementById("newVal" + w).value);
+    if (!isNaN(val)) filled++;
+  }
+  const percent = Math.round((filled / totalFields) * 100);
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+
+
+
+
+</script>
+</div>
+  </div>
+<script>
+const weeks = ['S27', 'S28', 'S29', 'S30', 'S31', 'S32'];
+const kpiData = {
+"Écart budget prévisionnel / réalisé (%)": { values: [9.12, 10.85, 10.2, 9.8, 8.47, 8.47], objectif: 10 },
+"Taux de valorisation des devis en moins de 5 jours (%)": { values: [73.57, 95.39, 88.23, 91.12, 72.56, 98.19], objectif: 90 },
+"Montant des avenants sur budget initial (%)": { values: [5.25, 4.32, 4.27, 4.28, 4.46, 4.79], objectif: 5 },
+"Économie générée par le value engineering (€ ou %)": { values: [9.3, 8.87, 9.84, 8.42, 8.88, 9.1], objectif: 10 },
+"Taux d'avancement des travaux par rapport au planning (%)": { values: [93.68, 103.56, 85.99, 95.43, 97.77, 81.39], objectif: 100 },
+"Nombre de chambres livrées dans les délais (%)": { values: [93.32, 80.86, 77.85, 103.04, 103.52, 99.04], objectif: 95 },
+"Temps moyen de traitement d’un défaut signalé (en jours)": { values: [1.78, 1.66, 2.01, 1.86, 1.67, 1.9], objectif: 2 },
+"Taux de respect des créneaux horaires bruyants (%)": { values: [81.03, 107.28, 87.76, 99.88, 89.35, 95.6], objectif: 100 },
+"Taux de levée de réserves au premier passage (%)": { values: [86.76, 76.99, 98.18, 92.93, 97.37, 96.16], objectif: 90 },
+"Taux de défauts par chambre à la livraison (nb moyen)": { values: [0.98, 1.08, 0.83, 0.86, 0.81, 0.9], objectif: 1 },
+"Taux de conformité des fiches d’autocontrôle complétées (%)": { values: [85, 90, 93, 98, 94, 96], objectif: 100 },
+"Nombre de retours client ou exploitant liés à la qualité post-réception": { values: [2, 1, 0, 0, 1, 0], objectif: 0 },
+"Part des matériaux à faible impact environnemental utilisés (%)": { values: [24.05, 31.34, 30.36, 30.56, 30.94, 24.67], objectif: 30 },
+"Taux de tri des déchets chantier (%)": { values: [63.53, 58.43, 74.13, 69.09, 62.95, 57.33], objectif: 70 },
+"Réduction des émissions liées à la logistique (nb livraisons optimisées)": { values: [2.68, 2.69, 3.06, 2.97, 3.2, 2.82], objectif: 3 },
+"Nombre de solutions éco-conçues intégrées": { values: [2, 3, 3, 4, 4, 5], objectif: 3 },
+
+};
+
+let currentKPI = Object.keys(kpiData)[0];
+const kpiSelect = document.getElementById("kpiSelect");
+const kpiTable = document.querySelector("#kpiTable tbody");
+
+function showSection(id) {
+  document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  if (id === "list") renderTable();
+}
+
+function updateGraph() {
+  currentKPI = kpiSelect.value;
+  const data = kpiData[currentKPI];
+  const suffix = currentKPI.includes('%') ? '%' : '';
+  const trace1 = {
+    x: weeks,
+    y: data.values,
+    mode: 'lines+markers',
+    name: 'Mesure',
+    line: {color: 'white', width: 3},
+    marker: {color: 'white', size: 8},
+    hovertemplate: 'Mesure : %{y}' + suffix + '<extra></extra>'
+  };
+  const trace2 = {
+    x: weeks,
+    y: weeks.map(() => data.objectif),
+    mode: 'lines',
+    name: 'Objectif',
+    line: {color: 'red', dash: 'dash'},
+    hovertemplate: 'Objectif : %{y}' + suffix + '<extra></extra>'
+  };
+  Plotly.newPlot('chart', [trace1, trace2], {
+    title: {text: currentKPI.toUpperCase(), font: {color: 'white'}},
+    plot_bgcolor: '#145E78',
+    paper_bgcolor: '#145E78',
+    font: {color: 'white'},
+    xaxis: {title: 'Semaine (n°)', tickvals: weeks},
+    yaxis: {title: 'Valeur'},
+    showlegend: true,
+    hovermode: 'x unified'
+  });
+}
+
+function renderTable() {
+  kpiTable.innerHTML = "";
+  for (let kpi in kpiData) {
+    const tr = document.createElement("tr");
+    const objectif = kpiData[kpi].objectif;
+    const avg = (kpiData[kpi].values.reduce((a,b)=>a+b,0)/kpiData[kpi].values.length).toFixed(2);
+    const ratio = Math.min((avg / objectif) * 100, 100).toFixed(2);
+    const color = avg >= objectif ? "#2ecc71" : "#e67e22";
+    const unit = kpi.includes('%') ? '%' : kpi.includes('€') ? '€' : (kpi.includes('jours') ? 'j' : '');
+
+    tr.innerHTML = `
+      <td>${kpi}</td>
+      <td>${objectif} ${unit}</td>
+      <td>
+        <div style="background:#ccc; border-radius:10px; overflow:hidden; height:14px;">
+          <div style="width:${ratio}%; background-color:${color}; height:100%;"></div>
+        </div>
+        <div style='font-size: 12px; margin-top: 2px;'>${avg} ${unit}</div>
+      </td>
+      <td>
+        <button onclick="editKPI('${kpi}')" style="padding: 4px 6px; font-size: 12px;">✏️</button>
+        <button onclick="deleteKPI('${kpi}')" style="padding: 4px 6px; font-size: 12px; background-color: #e74c3c; color: white;">🗑️</button>
+      </td>
+    `;
+    kpiTable.appendChild(tr);
+  }
+}
+function editKPI(name) {
+  const kpi = kpiData[name];
+  document.getElementById("newKpiName").value = name;
+  document.getElementById("newKpiObjectif").value = kpi.objectif;
+  weeks.forEach((_, i) => {
+    document.getElementById("newVal" + w).value = kpi.values[i];
+  });
+  showSection('add');
+  setTimeout(() => {
+    document.getElementById("newKpiName").scrollIntoView({behavior: 'smooth'});
+  }, 100);
+}
+
+
+function deleteKPI(name) {
+  if (confirm("Supprimer le KPI : " + name + " ?")) {
+    delete kpiData[name];
+    if (currentKPI === name) {
+      currentKPI = Object.keys(kpiData)[0];
+      kpiSelect.value = currentKPI;
+    }
+    updateSelect();
+    renderTable();
+    updateGraph();
+  }
+}
+
+function updateSelect() {
+  kpiSelect.innerHTML = "";
+  Object.keys(kpiData).forEach(k => {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.text = k;
+    kpiSelect.add(opt);
+  });
+}
+
+function addNewKPI() {
+  const name = document.getElementById("newKpiName").value;
+  const objectif = parseFloat(document.getElementById("newKpiObjectif").value);
+  const values = weeks.map((_, i) => parseFloat(document.getElementById("newVal" + w).value));
+  if (!name || isNaN(objectif) || values.some(isNaN)) {
+    alert("Merci de remplir tous les champs.");
+    return;
+  }
+  kpiData[name] = { values: values, objectif: objectif };
+  updateSelect();
+  renderTable();
+  kpiSelect.value = name;
+  currentKPI = name;
+  updateGraph();
+  
+const feedback = document.createElement("div");
+feedback.innerText = "✅ KPI ajouté avec succès !";
+feedback.style.position = "fixed";
+feedback.style.bottom = "20px";
+feedback.style.left = "50%";
+feedback.style.transform = "translateX(-50%)";
+feedback.style.background = "#0e3b4d";
+feedback.style.color = "white";
+feedback.style.padding = "10px 20px";
+feedback.style.borderRadius = "8px";
+feedback.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+feedback.style.zIndex = 1000;
+document.body.appendChild(feedback);
+setTimeout(() => feedback.remove(), 3000);
+
+}
+
+function exportPDF() {
+  html2pdf().from(document.getElementById("chart")).set({filename: currentKPI.replace(/[^a-zA-Z0-9]/g, "_") + '.pdf'}).save();
+}
+
+updateSelect();
+updateGraph();
+weeks.forEach((w) => {
+  const input = document.createElement("input");
+  input.type = "number";
+  input.step = "any";
+  input.id = "newVal" + i;
+  input.placeholder = "Semaine " + w;
+   document.getElementById("newKpiValues").appendChild(input);
+});
+
+let previewWeeks = 6;
+
+function generateInputs(count) {
+  const container = document.getElementById("newKpiValues");
+  const oldValues = {};
+  for (let i = 0; i < previewWeeks; i++) {
+    const oldInput = document.getElementById("newVal" + w);
+    if (oldInput) {
+      oldValues[i] = oldInput.value;
+    }
+  }
+  container.innerHTML = "";
+  previewWeeks = parseInt(count);
+  for (let i = 0; i < previewWeeks; i++) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.step = "any";
+    input.id = "newVal" + i;
+    input.placeholder = "Semaine " + (i + 1);
+    input.oninput = function() { updateProgressBar(); updatePreviewChart(); };
+    if (oldValues[i] !== undefined) input.value = oldValues[i];
+    container.appendChild(input);
+  }
+  updatePreviewChart();
+}
+
+function updatePreviewChart() {
+  const name = document.getElementById("newKpiName").value || "Prévisualisation";
+  const objectif = parseFloat(document.getElementById("newKpiObjectif").value);
+  const values = Array.from({length: previewWeeks}, (_, i) => {
+    const val = parseFloat(document.getElementById("newVal" + w).value);
+    return isNaN(val) ? null : val;
+  });
+  const suffix = name.includes('%') ? '%' : '';
+
+  const trace1 = {
+    x: values.map((_, i) => i + 1).filter((_, i) => values[i] !== null),
+    y: values.filter(v => v !== null),
+    mode: 'lines+markers',
+    name: 'Mesure',
+    line: {color: 'blue', width: 3},
+    marker: {color: 'blue', size: 6},
+    hovertemplate: 'Valeur : %{y}' + suffix + '<extra></extra>'
+  };
+
+  const trace2 = (!isNaN(objectif)) ? {
+    x: values.map((_, i) => i + 1).filter((_, i) => values[i] !== null),
+    y: values.filter(v => v !== null).map(() => objectif),
+    mode: 'lines',
+    name: 'Objectif',
+    line: {color: 'red', dash: 'dash'},
+    hovertemplate: 'Objectif : %{y}' + suffix + '<extra></extra>'
+  } : null;
+
+  const data = (!isNaN(objectif)) ? [trace1, trace2] : [trace1];
+
+  Plotly.newPlot('previewChart', data, {
+    title: {text: name.toUpperCase()},
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    font: {color: '#333'},
+    xaxis: {title: 'Semaine'},
+    yaxis: {title: 'Valeur'},
+    showlegend: true,
+    hovermode: 'x unified'
+  });
+}
+
+
+function updateProgressBar() {
+  const totalFields = previewWeeks + 2; // nom + objectif + valeurs
+  let filled = 0;
+  if (document.getElementById("newKpiName").value.trim() !== "") filled++;
+  if (!isNaN(parseFloat(document.getElementById("newKpiObjectif").value))) filled++;
+  for (let i = 0; i < previewWeeks; i++) {
+    const val = parseFloat(document.getElementById("newVal" + w).value);
+    if (!isNaN(val)) filled++;
+  }
+  const percent = Math.round((filled / totalFields) * 100);
+  document.getElementById("progressBar").style.width = percent + "%";
+}
+
+
+
+
+
+</script>
+</body>
+</html>
